@@ -108,6 +108,18 @@ class McpElements
         return $message;
     }
 
+    /**
+     * Reverse a string.
+     *
+     * @param string $text The text to reverse
+     * @return string The reversed text
+     */
+    #[McpTool]
+    public function reverse(string $text): string
+    {
+        return strrev($text);
+    }
+
     // =========================================================================
     // RESOURCES
     // Resources expose data to the client that can be read.
