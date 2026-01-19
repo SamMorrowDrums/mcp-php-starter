@@ -1,0 +1,30 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "mcp-php-starter",
+  "description": "A PHP MCP server template demonstrating tools, prompts, and resources",
+  "title": "MCP PHP Starter",
+  "repository": {
+    "url": "https://github.com/SamMorrowDrums/mcp-php-starter",
+    "source": "github"
+  },
+  "version": "1.0.0",
+  "packages": [
+    {
+      "registryType": "composer",
+      "identifier": "sammorrowdrums/mcp-php-starter",
+      "transport": {
+        "type": "stdio"
+      },
+      "runtimeHint": "php",
+      "runtime": "php",
+      "command": ["php", "vendor/bin/mcp-php-starter"]
+    }
+  ],
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "http://localhost:3000/",
+      "description": "Local HTTP server (run `composer start:http` first)"
+    }
+  ]
+}

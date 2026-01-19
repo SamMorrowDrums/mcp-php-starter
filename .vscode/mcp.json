@@ -1,0 +1,8 @@
+{
+  "servers": {
+    "mcp-php-starter": {
+      "command": "php",
+      "args": ["${workspaceFolder}/bin/server-stdio.php"]
+    }
+  }
+}
