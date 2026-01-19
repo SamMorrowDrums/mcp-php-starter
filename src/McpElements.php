@@ -6,19 +6,38 @@ namespace McpPhpStarter;
 
 use Mcp\Capability\Attribute\McpTool;
 use Mcp\Capability\Attribute\McpResource;
+use Mcp\Capability\Attribute\McpResourceTemplate;
 use Mcp\Capability\Attribute\McpPrompt;
+use Mcp\Schema\ToolAnnotations;
+use Mcp\Schema\Icon;
+use Mcp\Server\RequestContext;
 
 /**
  * MCP PHP Starter - Elements
  *
  * All MCP capabilities (tools, resources, prompts) defined using attributes.
- * This demonstrates the attribute-based discovery pattern from the PHP SDK.
+ * This demonstrates the attribute-based discovery pattern from the PHP SDK,
+ * including advanced features like sampling, progress, icons, and annotations.
  *
  * @see https://modelcontextprotocol.io/
  */
 class McpElements
 {
     private bool $bonusToolLoaded = false;
+
+    // =============================================================================
+    // TOOL ANNOTATIONS - Every tool SHOULD have annotations for AI assistants
+    //
+    // WHY ANNOTATIONS MATTER:
+    // Annotations enable MCP client applications to understand the risk level of
+    // tool calls. Clients can use these hints to implement safety policies.
+    //
+    // ANNOTATION FIELDS:
+    // - readOnlyHint: Tool only reads data, doesn't modify state
+    // - destructiveHint: Tool can permanently delete or modify data
+    // - idempotentHint: Repeated calls with same args have same effect
+    // - openWorldHint: Tool accesses external systems (web, APIs, etc.)
+    // =============================================================================
 
     // =========================================================================
     // TOOLS
@@ -31,7 +50,16 @@ class McpElements
      * @param string $name The name to greet
      * @return string The greeting message
      */
-    #[McpTool]
+    #[McpTool(
+        annotations: new ToolAnnotations(
+            title: 'Say Hello',
+            readOnlyHint: true,
+            destructiveHint: false,
+            idempotentHint: true,
+            openWorldHint: false
+        ),
+        icons: [new Icon('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">👋</text></svg>')]
+    )]
     public function hello(string $name): string
     {
         return "Hello, {$name}! Welcome to MCP.";
@@ -43,7 +71,17 @@ class McpElements
      * @param string $location City name or coordinates
      * @return array<string, mixed> Weather data including temperature, conditions, humidity
      */
-    #[McpTool(name: 'get_weather')]
+    #[McpTool(
+        name: 'get_weather',
+        annotations: new ToolAnnotations(
+            title: 'Get Weather',
+            readOnlyHint: true,
+            destructiveHint: false,
+            idempotentHint: false,
+            openWorldHint: false
+        ),
+        icons: [new Icon('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🌤️</text></svg>')]
+    )]
     public function getWeather(string $location): array
     {
         $conditions = ['sunny', 'cloudy', 'rainy', 'windy'];
@@ -58,34 +96,118 @@ class McpElements
     }
 
     /**
+     * Ask the connected LLM a question using sampling.
+     *
+     * @param RequestContext $context The request context for client communication
+     * @param string $prompt The question or prompt for the LLM
+     * @param int $maxTokens Maximum tokens in response (default: 100)
+     * @return string The LLM response
+     */
+    #[McpTool(
+        name: 'ask_llm',
+        annotations: new ToolAnnotations(
+            title: 'Ask LLM',
+            readOnlyHint: true,
+            destructiveHint: false,
+            idempotentHint: false,
+            openWorldHint: false
+        ),
+        icons: [new Icon('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🤖</text></svg>')]
+    )]
+    public function askLlm(RequestContext $context, string $prompt, int $maxTokens = 100): string
+    {
+        try {
+            $result = $context->getClientGateway()->sample($prompt, $maxTokens);
+            return "LLM Response: " . ($result->content->text ?? '[non-text response]');
+        } catch (\Throwable $e) {
+            return "Sampling not supported or failed: " . $e->getMessage();
+        }
+    }
+
+    /**
      * A task that takes time and reports progress along the way.
      *
+     * @param RequestContext $context The request context for progress notifications
      * @param string $taskName Name for this task
      * @return string Completion message
      */
-    #[McpTool(name: 'long_task')]
-    public function longTask(string $taskName): string
+    #[McpTool(
+        name: 'long_task',
+        annotations: new ToolAnnotations(
+            title: 'Long Running Task',
+            readOnlyHint: true,
+            destructiveHint: false,
+            idempotentHint: true,
+            openWorldHint: false
+        ),
+        icons: [new Icon('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">⏳</text></svg>')]
+    )]
+    public function longTask(RequestContext $context, string $taskName): string
     {
         $steps = 5;
         
         for ($i = 0; $i < $steps; $i++) {
-            // In a real implementation, progress notifications would be sent
-            usleep(200000); // 200ms per step (1 second total for faster CI)
+            try {
+                $context->getClientGateway()->progress(
+                    ($i + 1) / $steps,
+                    1.0,
+                    "Step " . ($i + 1) . "/{$steps}"
+                );
+            } catch (\Throwable $e) {
+                // Progress not supported, continue anyway
+            }
+            usleep(200000); // 200ms per step
         }
         
         return "Task \"{$taskName}\" completed successfully after {$steps} steps!";
     }
 
     /**
-     * Performs basic arithmetic operations.
+     * Dynamically loads a bonus tool that wasn't available at startup.
+     *
+     * @return string Status message
+     */
+    #[McpTool(
+        name: 'load_bonus_tool',
+        annotations: new ToolAnnotations(
+            title: 'Load Bonus Tool',
+            readOnlyHint: false,
+            destructiveHint: false,
+            idempotentHint: true,
+            openWorldHint: false
+        ),
+        icons: [new Icon('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">📦</text></svg>')]
+    )]
+    public function loadBonusTool(): string
+    {
+        if ($this->bonusToolLoaded) {
+            return "Bonus tool is already loaded! Try calling 'bonus_calculator'.";
+        }
+        
+        $this->bonusToolLoaded = true;
+        return "Bonus tool 'bonus_calculator' has been loaded! The tools list has been updated.";
+    }
+
+    /**
+     * A calculator that was dynamically loaded (available after load_bonus_tool).
      *
      * @param float $a The first number
      * @param float $b The second number
      * @param string $operation The operation (add, subtract, multiply, divide)
      * @return float|string The result or an error message
      */
-    #[McpTool(name: 'calculate')]
-    public function calculate(float $a, float $b, string $operation): float|string
+    #[McpTool(
+        name: 'bonus_calculator',
+        annotations: new ToolAnnotations(
+            title: 'Bonus Calculator',
+            readOnlyHint: true,
+            destructiveHint: false,
+            idempotentHint: true,
+            openWorldHint: false
+        ),
+        icons: [new Icon('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">🧮</text></svg>')]
+    )]
+    public function bonusCalculator(float $a, float $b, string $operation): float|string
     {
         return match($operation) {
             'add' => $a + $b,
@@ -102,22 +224,18 @@ class McpElements
      * @param string $message The message to echo back
      * @return string The echoed message
      */
-    #[McpTool]
+    #[McpTool(
+        annotations: new ToolAnnotations(
+            title: 'Echo',
+            readOnlyHint: true,
+            destructiveHint: false,
+            idempotentHint: true,
+            openWorldHint: false
+        )
+    )]
     public function echo(string $message): string
     {
         return $message;
-    }
-
-    /**
-     * Reverse a string.
-     *
-     * @param string $text The text to reverse
-     * @return string The reversed text
-     */
-    #[McpTool]
-    public function reverse(string $text): string
-    {
-        return strrev($text);
     }
 
     // =========================================================================
@@ -141,9 +259,12 @@ class McpElements
 MCP PHP Starter v1.0.0
 
 This is a feature-complete MCP server demonstrating:
-- Tools with structured output
-- Resources (static and dynamic)
+- Tools with structured output, icons, and annotations
+- Resources (static, dynamic, and templates)
 - Prompts with completions
+- LLM Sampling (ask_llm tool)
+- Progress notifications (long_task tool)
+- Dynamic tool loading (load_bonus_tool)
 - Multiple transport options (stdio, HTTP)
 
 For more information, visit: https://modelcontextprotocol.io
@@ -204,11 +325,39 @@ MARKDOWN;
                 'tools' => true,
                 'resources' => true,
                 'prompts' => true,
+                'sampling' => true,
+                'progress' => true,
             ],
             'settings' => [
                 'precision' => 2,
                 'allow_negative' => true,
             ],
+        ];
+    }
+
+    // =========================================================================
+    // RESOURCE TEMPLATES
+    // Resource templates allow parameterized URIs for dynamic resources.
+    // =========================================================================
+
+    /**
+     * Get a data item by ID using a URI template.
+     *
+     * @param string $id The item ID
+     * @return array<string, mixed> The item data
+     */
+    #[McpResourceTemplate(
+        uriTemplate: 'data://items/{id}',
+        name: 'Data Item',
+        mimeType: 'application/json'
+    )]
+    public function getDataItem(string $id): array
+    {
+        return [
+            'id' => $id,
+            'name' => "Item {$id}",
+            'description' => "This is data item with ID: {$id}",
+            'created' => date('c'),
         ];
     }
 
