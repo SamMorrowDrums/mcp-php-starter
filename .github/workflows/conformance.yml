@@ -26,11 +26,9 @@ jobs:
           extensions: json, mbstring
           tools: composer:v2
 
-      - name: Install dependencies
-        run: composer install --prefer-dist --no-progress
-
       - uses: SamMorrowDrums/mcp-conformance-action@v2
         with:
+          install_command: composer install --prefer-dist --no-progress
           configurations: |
             [
               {
