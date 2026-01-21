@@ -198,7 +198,7 @@ class ServerFactory
             ->addResource(
                 handler: [McpElements::class, 'getExampleDocument'],
                 uri: 'doc://example',
-                name: 'Example-Document',
+                name: 'Example Document',
                 description: 'An example document resource',
                 mimeType: 'text/plain'
             )
@@ -207,14 +207,14 @@ class ServerFactory
             ->addResourceTemplate(
                 handler: [McpElements::class, 'getPersonalizedGreeting'],
                 uriTemplate: 'greeting://{name}',
-                name: 'Personalized-Greeting',
+                name: 'Personalized Greeting',
                 description: 'A personalized greeting for a specific person',
                 mimeType: 'text/plain'
             )
             ->addResourceTemplate(
                 handler: [McpElements::class, 'getItemData'],
                 uriTemplate: 'item://{id}',
-                name: 'Item-Data',
+                name: 'Item Data',
                 description: 'Data for a specific item by ID',
                 mimeType: 'application/json'
             )
