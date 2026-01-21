@@ -32,6 +32,6 @@ try {
     $transport = new StdioTransport();
     $server->run($transport);
 } catch (Throwable $e) {
-    fwrite(STDERR, "Fatal error: " . $e->getMessage() . "\n");
+    fwrite(STDERR, 'Fatal error: ' . $e->getMessage() . "\n");
     exit(1);
 }

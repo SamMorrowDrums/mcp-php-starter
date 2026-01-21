@@ -15,9 +15,9 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 use Mcp\Server;
 use Mcp\Server\Transport\StreamableHttpTransport;
+use McpPhpStarter\ServerFactory;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7Server\ServerRequestCreator;
-use McpPhpStarter\ServerFactory;
 
 // Handle health check
 if ($_SERVER['REQUEST_URI'] === '/health' && $_SERVER['REQUEST_METHOD'] === 'GET') {
@@ -32,14 +32,14 @@ if ($_SERVER['REQUEST_URI'] === '/health' && $_SERVER['REQUEST_METHOD'] === 'GET
 
 try {
     $psr17Factory = new Psr17Factory();
-    
+
     $creator = new ServerRequestCreator(
         $psr17Factory,
         $psr17Factory,
         $psr17Factory,
         $psr17Factory
     );
-    
+
     $request = $creator->fromGlobals();
 
     $server = ServerFactory::configureBuilder(

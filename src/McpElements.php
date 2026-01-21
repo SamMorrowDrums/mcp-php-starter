@@ -42,7 +42,7 @@ class McpElements
     public function getWeather(string $city): array
     {
         $conditions = ['sunny', 'cloudy', 'rainy', 'windy'];
-        
+
         return [
             'location' => $city,
             'temperature' => rand(15, 35),
@@ -65,7 +65,7 @@ class McpElements
             // In a real implementation, progress notifications would be sent
             usleep(200000); // 200ms per step (1 second total for faster CI)
         }
-        
+
         return "Task \"{$taskName}\" completed successfully after {$steps} steps!";
     }
 
@@ -77,7 +77,7 @@ class McpElements
     public function loadBonusTool(): string
     {
         $this->bonusToolLoaded = true;
-        return "Bonus tool has been successfully loaded and registered!";
+        return 'Bonus tool has been successfully loaded and registered!';
     }
 
     /**

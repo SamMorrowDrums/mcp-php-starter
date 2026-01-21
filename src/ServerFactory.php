@@ -143,7 +143,7 @@ class ServerFactory
                     'required' => ['question'],
                 ]
             )
-            
+
             // Resources
             ->addResource(
                 handler: [McpElements::class, 'getAbout'],
@@ -159,7 +159,7 @@ class ServerFactory
                 description: 'An example document resource',
                 mimeType: 'text/plain'
             )
-            
+
             // Resource Templates
             ->addResourceTemplate(
                 handler: [McpElements::class, 'getPersonalizedGreeting'],
@@ -175,7 +175,7 @@ class ServerFactory
                 description: 'Data for a specific item by ID',
                 mimeType: 'application/json'
             )
-            
+
             // Prompts
             ->addPrompt(
                 handler: [McpElements::class, 'greetPrompt'],

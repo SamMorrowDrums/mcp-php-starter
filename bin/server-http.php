@@ -21,7 +21,6 @@ declare(strict_types=1);
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use Mcp\Server;
-use McpPhpStarter\ServerFactory;
 
 $port = getenv('PORT') ?: '3000';
 
@@ -32,7 +31,7 @@ echo "\nPress Ctrl+C to exit\n";
 try {
     // Note: The actual server configuration happens in public/index.php
     // This just starts PHP's built-in server for development
-    
+
     // Start PHP's built-in server
     $command = sprintf(
         'php -S localhost:%s -t %s %s',
@@ -40,9 +39,9 @@ try {
         escapeshellarg(__DIR__ . '/../public'),
         escapeshellarg(__DIR__ . '/../public/index.php')
     );
-    
+
     passthru($command);
 } catch (Throwable $e) {
-    fwrite(STDERR, "Fatal error: " . $e->getMessage() . "\n");
+    fwrite(STDERR, 'Fatal error: ' . $e->getMessage() . "\n");
     exit(1);
 }
