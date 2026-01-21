@@ -15,31 +15,9 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 use Mcp\Server;
 use Mcp\Server\Transport\StreamableHttpTransport;
+use McpPhpStarter\ServerFactory;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7Server\ServerRequestCreator;
-
-// Server instructions
-$instructions = <<<INSTRUCTIONS
-# MCP PHP Starter Server
-
-A demonstration MCP server showcasing PHP SDK capabilities.
-
-## Available Tools
-- **hello**: Simple greeting
-- **get_weather**: Returns simulated weather data
-- **long_task**: Demonstrates progress reporting
-- **calculate**: Perform arithmetic operations
-- **echo**: Echo back the provided message
-
-## Available Resources
-- **info://about**: Server information
-- **doc://example**: Example markdown document
-- **config://settings**: Server configuration
-
-## Available Prompts
-- **greet**: Generates a personalized greeting
-- **code_review**: Structured code review prompt
-INSTRUCTIONS;
 
 // Handle health check
 if ($_SERVER['REQUEST_URI'] === '/health' && $_SERVER['REQUEST_METHOD'] === 'GET') {
@@ -54,21 +32,21 @@ if ($_SERVER['REQUEST_URI'] === '/health' && $_SERVER['REQUEST_METHOD'] === 'GET
 
 try {
     $psr17Factory = new Psr17Factory();
-    
+
     $creator = new ServerRequestCreator(
         $psr17Factory,
         $psr17Factory,
         $psr17Factory,
         $psr17Factory
     );
-    
+
     $request = $creator->fromGlobals();
 
-    $server = Server::builder()
-        ->setServerInfo('mcp-php-starter', '1.0.0')
-        ->setInstructions($instructions)
-        ->setDiscovery(__DIR__ . '/..', ['src'])
-        ->build();
+    $server = ServerFactory::configureBuilder(
+        Server::builder()
+            ->setServerInfo('mcp-php-starter', '1.0.0')
+            ->setInstructions(ServerFactory::getInstructions())
+    )->build();
 
     $transport = new StreamableHttpTransport(
         $request,

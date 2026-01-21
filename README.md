@@ -17,16 +17,19 @@ A feature-complete Model Context Protocol (MCP) server template in PHP. This sta
 
 | Category | Feature | Description |
 |----------|---------|-------------|
-| **Tools** | `hello` | Basic greeting tool |
-| | `get_weather` | Tool with structured output |
-| | `long_task` | Task with progress reporting |
-| | `calculate` | Arithmetic operations |
-| | `echo` | Echo back messages |
-| **Resources** | `info://about` | Server information |
-| | `doc://example` | Example markdown document |
-| | `config://settings` | Server configuration |
-| **Prompts** | `greet` | Greeting in various styles |
-| | `code_review` | Code review with focus areas |
+| **Tools** | `hello` | Say hello to a person |
+| | `get_weather` | Get the current weather for a city |
+| | `long_task` | Simulate a long-running task with progress updates |
+| | `load_bonus_tool` | Dynamically register a new bonus tool |
+| | `ask_llm` | Ask the connected LLM a question using sampling |
+| | `confirm_action` | Request user confirmation before proceeding |
+| | `get_feedback` | Request feedback from the user |
+| **Resources** | `about://server` | Information about this MCP server |
+| | `doc://example` | An example document resource |
+| **Resource Templates** | `greeting://{name}` | A personalized greeting for a specific person |
+| | `item://{id}` | Data for a specific item by ID |
+| **Prompts** | `greet` | Generate a greeting message |
+| | `code_review` | Review code for potential improvements |
 
 ## 🚀 Quick Start
 
@@ -124,42 +127,62 @@ npx @modelcontextprotocol/inspector php bin/server-stdio.php
 
 ## 📖 Feature Examples
 
-### Tool with Attribute Discovery
+### Tools with Custom Schemas
+
+All tools are manually registered with custom input schemas that include both `title` and `description` fields for cross-language consistency:
 
 ```php
-#[McpTool]
-public function hello(string $name): string
-{
-    return "Hello, {$name}! Welcome to MCP.";
-}
+// In ServerFactory.php
+->addTool(
+    handler: [$elements, 'hello'],
+    name: 'hello',
+    description: 'Say hello to a person',
+    inputSchema: [
+        'type' => 'object',
+        'properties' => [
+            'name' => [
+                'type' => 'string',
+                'title' => 'Name',
+                'description' => 'Name of the person to greet',
+            ],
+        ],
+        'required' => ['name'],
+    ]
+)
 ```
 
-### Resource with Metadata
+### Resources
 
 ```php
-#[McpResource(
-    uri: 'config://settings',
-    name: 'Server Settings',
-    mimeType: 'application/json'
-)]
-public function getSettings(): array
-{
-    return ['precision' => 2, 'allow_negative' => true];
-}
+->addResource(
+    handler: [$elements, 'getAbout'],
+    uri: 'about://server',
+    name: 'About',
+    description: 'Information about this MCP server',
+    mimeType: 'text/plain'
+)
 ```
 
-### Prompt Template
+### Resource Templates
 
 ```php
-#[McpPrompt(name: 'greet')]
-public function greetPrompt(string $name, ?string $style = 'casual'): string
-{
-    $styles = [
-        'formal' => "Please compose a formal greeting for {$name}.",
-        'casual' => "Write a casual hello to {$name}.",
-    ];
-    return $styles[$style] ?? $styles['casual'];
-}
+->addResourceTemplate(
+    handler: [$elements, 'getPersonalizedGreeting'],
+    uriTemplate: 'greeting://{name}',
+    name: 'Personalized Greeting',
+    description: 'A personalized greeting for a specific person',
+    mimeType: 'text/plain'
+)
+```
+
+### Prompts
+
+```php
+->addPrompt(
+    handler: [$elements, 'greetPrompt'],
+    name: 'greet',
+    description: 'Generate a greeting message'
+)
 ```
 
 ## 🔐 Environment Variables

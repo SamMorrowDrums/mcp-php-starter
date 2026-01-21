@@ -4,15 +4,12 @@ declare(strict_types=1);
 
 namespace McpPhpStarter;
 
-use Mcp\Capability\Attribute\McpTool;
-use Mcp\Capability\Attribute\McpResource;
-use Mcp\Capability\Attribute\McpPrompt;
-
 /**
  * MCP PHP Starter - Elements
  *
- * All MCP capabilities (tools, resources, prompts) defined using attributes.
- * This demonstrates the attribute-based discovery pattern from the PHP SDK.
+ * All MCP capabilities (tools, resources, prompts) defined as methods.
+ * These will be manually registered in the server configuration with
+ * proper schemas that include both title and description fields.
  *
  * @see https://modelcontextprotocol.io/
  */
@@ -26,30 +23,28 @@ class McpElements
     // =========================================================================
 
     /**
-     * A friendly greeting tool that says hello to someone.
+     * Say hello to a person.
      *
-     * @param string $name The name to greet
+     * @param string $name Name of the person to greet
      * @return string The greeting message
      */
-    #[McpTool]
     public function hello(string $name): string
     {
         return "Hello, {$name}! Welcome to MCP.";
     }
 
     /**
-     * Get current weather for a location (simulated).
+     * Get the current weather for a city.
      *
-     * @param string $location City name or coordinates
+     * @param string $city City name to get weather for
      * @return array<string, mixed> Weather data including temperature, conditions, humidity
      */
-    #[McpTool(name: 'get_weather')]
-    public function getWeather(string $location): array
+    public function getWeather(string $city): array
     {
         $conditions = ['sunny', 'cloudy', 'rainy', 'windy'];
-        
+
         return [
-            'location' => $location,
+            'location' => $city,
             'temperature' => rand(15, 35),
             'unit' => 'celsius',
             'conditions' => $conditions[array_rand($conditions)],
@@ -58,54 +53,78 @@ class McpElements
     }
 
     /**
-     * A task that takes time and reports progress along the way.
+     * Simulate a long-running task with progress updates.
      *
      * @param string $taskName Name for this task
+     * @param int $steps Number of steps to simulate
      * @return string Completion message
      */
-    #[McpTool(name: 'long_task')]
-    public function longTask(string $taskName): string
+    public function longTask(string $taskName, int $steps = 5): string
     {
-        $steps = 5;
-        
         for ($i = 0; $i < $steps; $i++) {
             // In a real implementation, progress notifications would be sent
             usleep(200000); // 200ms per step (1 second total for faster CI)
         }
-        
+
         return "Task \"{$taskName}\" completed successfully after {$steps} steps!";
     }
 
     /**
-     * Performs basic arithmetic operations.
+     * Dynamically register a new bonus tool.
      *
-     * @param float $a The first number
-     * @param float $b The second number
-     * @param string $operation The operation (add, subtract, multiply, divide)
-     * @return float|string The result or an error message
+     * @return string Confirmation message
      */
-    #[McpTool(name: 'calculate')]
-    public function calculate(float $a, float $b, string $operation): float|string
+    public function loadBonusTool(): string
     {
-        return match($operation) {
-            'add' => $a + $b,
-            'subtract' => $a - $b,
-            'multiply' => $a * $b,
-            'divide' => $b != 0 ? $a / $b : 'Error: Division by zero',
-            default => 'Error: Unknown operation. Use add, subtract, multiply, or divide.'
-        };
+        $this->bonusToolLoaded = true;
+        return 'Bonus tool has been successfully loaded and registered!';
     }
 
     /**
-     * Echo back the provided message.
+     * Ask the connected LLM a question using sampling.
      *
-     * @param string $message The message to echo back
-     * @return string The echoed message
+     * @param string $prompt The question or prompt to send to the LLM
+     * @param int $maxTokens Maximum tokens in response
+     * @return string The LLM's response
      */
-    #[McpTool]
-    public function echo(string $message): string
+    public function askLlm(string $prompt, int $maxTokens = 100): string
     {
-        return $message;
+        // Simulated LLM response
+        return "This is a simulated response to: \"{$prompt}\". In a real implementation, this would use the MCP sampling feature to query the connected LLM. (Max tokens: {$maxTokens})";
+    }
+
+    /**
+     * Request user confirmation before proceeding.
+     *
+     * @param string $action Description of the action to confirm
+     * @param bool $destructive Whether the action is destructive
+     * @return array<string, mixed> Confirmation result
+     */
+    public function confirmAction(string $action, bool $destructive = false): array
+    {
+        // In a real implementation, this would prompt the user for confirmation
+        return [
+            'action' => $action,
+            'destructive' => $destructive,
+            'confirmed' => true,
+            'message' => "User confirmed: {$action}",
+        ];
+    }
+
+    /**
+     * Request feedback from the user.
+     *
+     * @param string $question The question to ask the user
+     * @return array<string, mixed> User's feedback
+     */
+    public function getFeedback(string $question): array
+    {
+        // In a real implementation, this would prompt the user for feedback
+        return [
+            'question' => $question,
+            'feedback' => "This is simulated user feedback for: {$question}",
+            'timestamp' => date('c'),
+        ];
     }
 
     // =========================================================================
@@ -118,11 +137,6 @@ class McpElements
      *
      * @return string Server information
      */
-    #[McpResource(
-        uri: 'info://about',
-        name: 'About',
-        mimeType: 'text/plain'
-    )]
     public function getAbout(): string
     {
         return <<<TEXT
@@ -139,63 +153,57 @@ TEXT;
     }
 
     /**
-     * An example markdown document.
+     * An example document resource.
      *
-     * @return string Markdown content
+     * @return string Document content
      */
-    #[McpResource(
-        uri: 'doc://example',
-        name: 'Example Document',
-        mimeType: 'text/markdown'
-    )]
     public function getExampleDocument(): string
     {
-        return <<<MARKDOWN
+        return <<<TEXT
 # Example Document
 
-This is an example markdown document served as an MCP resource.
+This is an example document served as an MCP resource.
 
 ## Features
 
-- **Bold text** and *italic text*
-- Lists and formatting
-- Code blocks
+- Demonstrates resource capabilities
+- Shows structured content delivery
+- Provides example data
 
-```php
-<?php
-\$hello = "world";
-```
+## More Information
 
-## Links
-
-- [MCP Documentation](https://modelcontextprotocol.io)
-- [PHP SDK](https://github.com/modelcontextprotocol/php-sdk)
-MARKDOWN;
+Visit https://modelcontextprotocol.io for documentation.
+TEXT;
     }
 
     /**
-     * Server configuration settings.
+     * A personalized greeting for a specific person.
      *
-     * @return array<string, mixed> Configuration data
+     * @param string $name The name of the person to greet
+     * @return string Personalized greeting
      */
-    #[McpResource(
-        uri: 'config://settings',
-        name: 'Server Settings',
-        mimeType: 'application/json'
-    )]
-    public function getSettings(): array
+    public function getPersonalizedGreeting(string $name): string
+    {
+        return "Hello, {$name}! This is your personalized greeting from the MCP PHP server. Have a wonderful day!";
+    }
+
+    /**
+     * Data for a specific item by ID.
+     *
+     * @param string $id The item ID
+     * @return array<string, mixed> Item data
+     */
+    public function getItemData(string $id): array
     {
         return [
-            'version' => '1.0.0',
-            'name' => 'mcp-php-starter',
-            'capabilities' => [
-                'tools' => true,
-                'resources' => true,
-                'prompts' => true,
-            ],
-            'settings' => [
-                'precision' => 2,
-                'allow_negative' => true,
+            'id' => $id,
+            'name' => "Item {$id}",
+            'description' => "This is a dynamically generated item with ID: {$id}",
+            'timestamp' => date('c'),
+            'properties' => [
+                'color' => 'blue',
+                'size' => 'medium',
+                'quantity' => rand(1, 100),
             ],
         ];
     }
@@ -206,13 +214,12 @@ MARKDOWN;
     // =========================================================================
 
     /**
-     * Generate a greeting in a specific style.
+     * Generate a greeting message.
      *
      * @param string $name Name of the person to greet
      * @param string|null $style The greeting style (formal, casual, enthusiastic)
      * @return string The prompt text
      */
-    #[McpPrompt(name: 'greet')]
     public function greetPrompt(string $name, ?string $style = 'casual'): string
     {
         $styles = [
@@ -225,15 +232,14 @@ MARKDOWN;
     }
 
     /**
-     * Request a code review with specific focus areas.
+     * Review code for potential improvements.
      *
      * @param string $code The code to review
      * @param string $language Programming language
      * @param string|null $focus What to focus on (security, performance, readability, all)
      * @return string The prompt text
      */
-    #[McpPrompt(name: 'code_review')]
-    public function codeReviewPrompt(string $code, string $language, ?string $focus = 'all'): string
+    public function codeReviewPrompt(string $code, string $language = 'php', ?string $focus = 'all'): string
     {
         $focusInstructions = [
             'security' => 'Focus on security vulnerabilities and potential exploits.',
