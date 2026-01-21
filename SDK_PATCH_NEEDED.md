@@ -23,7 +23,7 @@ To:
 /**
  * Resource name pattern regex - must contain only alphanumeric characters, underscores, hyphens, and spaces.
  */
-private const RESOURCE_NAME_PATTERN = '/^[a-zA-Z0-9_\- ]+$/';
+private const RESOURCE_NAME_PATTERN = '/^[a-zA-Z0-9_ -]+$/';
 ```
 
 And update the error message at line 71 from:
@@ -53,7 +53,7 @@ To:
 /**
  * Resource name pattern regex - must contain only alphanumeric characters, underscores, hyphens, and spaces.
  */
-private const RESOURCE_NAME_PATTERN = '/^[a-zA-Z0-9_\- ]+$/';
+private const RESOURCE_NAME_PATTERN = '/^[a-zA-Z0-9_ -]+$/';
 ```
 
 And update the error message at line 62 from:
