@@ -17,12 +17,10 @@ class ServerFactory
      */
     public static function configureBuilder(Builder $builder): Builder
     {
-        $elements = new McpElements();
-        
         return $builder
             // Tools with custom schemas (title + description on all properties)
             ->addTool(
-                handler: [$elements, 'hello'],
+                handler: [McpElements::class, 'hello'],
                 name: 'hello',
                 description: 'Say hello to a person',
                 inputSchema: [
@@ -38,7 +36,7 @@ class ServerFactory
                 ]
             )
             ->addTool(
-                handler: [$elements, 'getWeather'],
+                handler: [McpElements::class, 'getWeather'],
                 name: 'get_weather',
                 description: 'Get the current weather for a city',
                 inputSchema: [
@@ -54,7 +52,7 @@ class ServerFactory
                 ]
             )
             ->addTool(
-                handler: [$elements, 'longTask'],
+                handler: [McpElements::class, 'longTask'],
                 name: 'long_task',
                 description: 'Simulate a long-running task with progress updates',
                 inputSchema: [
@@ -76,7 +74,7 @@ class ServerFactory
                 ]
             )
             ->addTool(
-                handler: [$elements, 'loadBonusTool'],
+                handler: [McpElements::class, 'loadBonusTool'],
                 name: 'load_bonus_tool',
                 description: 'Dynamically register a new bonus tool',
                 inputSchema: [
@@ -86,7 +84,7 @@ class ServerFactory
                 ]
             )
             ->addTool(
-                handler: [$elements, 'askLlm'],
+                handler: [McpElements::class, 'askLlm'],
                 name: 'ask_llm',
                 description: 'Ask the connected LLM a question using sampling',
                 inputSchema: [
@@ -108,7 +106,7 @@ class ServerFactory
                 ]
             )
             ->addTool(
-                handler: [$elements, 'confirmAction'],
+                handler: [McpElements::class, 'confirmAction'],
                 name: 'confirm_action',
                 description: 'Request user confirmation before proceeding',
                 inputSchema: [
@@ -130,7 +128,7 @@ class ServerFactory
                 ]
             )
             ->addTool(
-                handler: [$elements, 'getFeedback'],
+                handler: [McpElements::class, 'getFeedback'],
                 name: 'get_feedback',
                 description: 'Request feedback from the user',
                 inputSchema: [
@@ -148,44 +146,44 @@ class ServerFactory
             
             // Resources
             ->addResource(
-                handler: [$elements, 'getAbout'],
+                handler: [McpElements::class, 'getAbout'],
                 uri: 'about://server',
-                name: 'About',
+                name: 'about',
                 description: 'Information about this MCP server',
                 mimeType: 'text/plain'
             )
             ->addResource(
-                handler: [$elements, 'getExampleDocument'],
+                handler: [McpElements::class, 'getExampleDocument'],
                 uri: 'doc://example',
-                name: 'Example Document',
+                name: 'example_document',
                 description: 'An example document resource',
                 mimeType: 'text/plain'
             )
             
             // Resource Templates
             ->addResourceTemplate(
-                handler: [$elements, 'getPersonalizedGreeting'],
+                handler: [McpElements::class, 'getPersonalizedGreeting'],
                 uriTemplate: 'greeting://{name}',
-                name: 'Personalized Greeting',
+                name: 'personalized_greeting',
                 description: 'A personalized greeting for a specific person',
                 mimeType: 'text/plain'
             )
             ->addResourceTemplate(
-                handler: [$elements, 'getItemData'],
+                handler: [McpElements::class, 'getItemData'],
                 uriTemplate: 'item://{id}',
-                name: 'Item Data',
+                name: 'item_data',
                 description: 'Data for a specific item by ID',
                 mimeType: 'application/json'
             )
             
             // Prompts
             ->addPrompt(
-                handler: [$elements, 'greetPrompt'],
+                handler: [McpElements::class, 'greetPrompt'],
                 name: 'greet',
                 description: 'Generate a greeting message'
             )
             ->addPrompt(
-                handler: [$elements, 'codeReviewPrompt'],
+                handler: [McpElements::class, 'codeReviewPrompt'],
                 name: 'code_review',
                 description: 'Review code for potential improvements'
             );
