@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace McpPhpStarter;
 
+use Mcp\Schema\ToolAnnotations;
 use Mcp\Server\Builder;
 
 /**
@@ -23,6 +24,12 @@ class ServerFactory
                 handler: [McpElements::class, 'hello'],
                 name: 'hello',
                 description: 'Say hello to a person',
+                annotations: new ToolAnnotations(
+                    readOnlyHint: true,
+                    destructiveHint: false,
+                    idempotentHint: true,
+                    openWorldHint: false
+                ),
                 inputSchema: [
                     'type' => 'object',
                     'properties' => [
@@ -39,6 +46,12 @@ class ServerFactory
                 handler: [McpElements::class, 'getWeather'],
                 name: 'get_weather',
                 description: 'Get the current weather for a city',
+                annotations: new ToolAnnotations(
+                    readOnlyHint: true,
+                    destructiveHint: false,
+                    idempotentHint: false,
+                    openWorldHint: false
+                ),
                 inputSchema: [
                     'type' => 'object',
                     'properties' => [
@@ -55,6 +68,12 @@ class ServerFactory
                 handler: [McpElements::class, 'longTask'],
                 name: 'long_task',
                 description: 'Simulate a long-running task with progress updates',
+                annotations: new ToolAnnotations(
+                    readOnlyHint: true,
+                    destructiveHint: false,
+                    idempotentHint: true,
+                    openWorldHint: false
+                ),
                 inputSchema: [
                     'type' => 'object',
                     'properties' => [
@@ -77,6 +96,12 @@ class ServerFactory
                 handler: [McpElements::class, 'loadBonusTool'],
                 name: 'load_bonus_tool',
                 description: 'Dynamically register a new bonus tool',
+                annotations: new ToolAnnotations(
+                    readOnlyHint: false,
+                    destructiveHint: false,
+                    idempotentHint: true,
+                    openWorldHint: false
+                ),
                 inputSchema: [
                     'type' => 'object',
                     'properties' => (object)[],
@@ -87,6 +112,12 @@ class ServerFactory
                 handler: [McpElements::class, 'askLlm'],
                 name: 'ask_llm',
                 description: 'Ask the connected LLM a question using sampling',
+                annotations: new ToolAnnotations(
+                    readOnlyHint: true,
+                    destructiveHint: false,
+                    idempotentHint: false,
+                    openWorldHint: false
+                ),
                 inputSchema: [
                     'type' => 'object',
                     'properties' => [
@@ -109,6 +140,12 @@ class ServerFactory
                 handler: [McpElements::class, 'confirmAction'],
                 name: 'confirm_action',
                 description: 'Request user confirmation before proceeding',
+                annotations: new ToolAnnotations(
+                    readOnlyHint: true,
+                    destructiveHint: false,
+                    idempotentHint: false,
+                    openWorldHint: false
+                ),
                 inputSchema: [
                     'type' => 'object',
                     'properties' => [
@@ -131,6 +168,12 @@ class ServerFactory
                 handler: [McpElements::class, 'getFeedback'],
                 name: 'get_feedback',
                 description: 'Request feedback from the user',
+                annotations: new ToolAnnotations(
+                    readOnlyHint: true,
+                    destructiveHint: false,
+                    idempotentHint: false,
+                    openWorldHint: true
+                ),
                 inputSchema: [
                     'type' => 'object',
                     'properties' => [
@@ -148,14 +191,14 @@ class ServerFactory
             ->addResource(
                 handler: [McpElements::class, 'getAbout'],
                 uri: 'about://server',
-                name: 'about',
+                name: 'About',
                 description: 'Information about this MCP server',
                 mimeType: 'text/plain'
             )
             ->addResource(
                 handler: [McpElements::class, 'getExampleDocument'],
                 uri: 'doc://example',
-                name: 'example_document',
+                name: 'Example-Document',
                 description: 'An example document resource',
                 mimeType: 'text/plain'
             )
@@ -164,14 +207,14 @@ class ServerFactory
             ->addResourceTemplate(
                 handler: [McpElements::class, 'getPersonalizedGreeting'],
                 uriTemplate: 'greeting://{name}',
-                name: 'personalized_greeting',
+                name: 'Personalized-Greeting',
                 description: 'A personalized greeting for a specific person',
                 mimeType: 'text/plain'
             )
             ->addResourceTemplate(
                 handler: [McpElements::class, 'getItemData'],
                 uriTemplate: 'item://{id}',
-                name: 'item_data',
+                name: 'Item-Data',
                 description: 'Data for a specific item by ID',
                 mimeType: 'application/json'
             )
@@ -180,12 +223,14 @@ class ServerFactory
             ->addPrompt(
                 handler: [McpElements::class, 'greetPrompt'],
                 name: 'greet',
-                description: 'Generate a greeting message'
+                description: 'Generate a greeting message',
+                meta: ['title' => 'Greeting Prompt']
             )
             ->addPrompt(
                 handler: [McpElements::class, 'codeReviewPrompt'],
                 name: 'code_review',
-                description: 'Review code for potential improvements'
+                description: 'Review code for potential improvements',
+                meta: ['title' => 'Code Review']
             );
     }
 
