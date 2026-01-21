@@ -235,25 +235,14 @@ TEXT;
      * Review code for potential improvements.
      *
      * @param string $code The code to review
-     * @param string $language Programming language
-     * @param string|null $focus What to focus on (security, performance, readability, all)
      * @return string The prompt text
      */
-    public function codeReviewPrompt(string $code, string $language = 'php', ?string $focus = 'all'): string
+    public function codeReviewPrompt(string $code): string
     {
-        $focusInstructions = [
-            'security' => 'Focus on security vulnerabilities and potential exploits.',
-            'performance' => 'Focus on performance optimizations and efficiency issues.',
-            'readability' => 'Focus on code clarity, naming, and maintainability.',
-            'all' => 'Provide a comprehensive review covering security, performance, and readability.',
-        ];
-
-        $instruction = $focusInstructions[$focus] ?? $focusInstructions['all'];
-
         return <<<PROMPT
-Please review the following {$language} code. {$instruction}
+Please review the following code for potential improvements.
 
-```{$language}
+```
 {$code}
 ```
 PROMPT;
