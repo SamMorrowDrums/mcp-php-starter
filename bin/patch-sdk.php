@@ -49,6 +49,11 @@ foreach ($patches as $patch) {
     }
 
     $content = file_get_contents($patch['file']);
+    if ($content === false) {
+        echo "Error: Could not read {$patch['name']}\n";
+        $allSuccess = false;
+        continue;
+    }
     $originalContent = $content;
 
     foreach ($patch['replacements'] as $replacement) {
@@ -57,7 +62,7 @@ foreach ($patches as $patch) {
 
         if ($count === 0) {
             // Check if already patched
-            if (strpos($content, $replacement['replace']) === false) {
+            if (!str_contains($content, $replacement['replace'])) {
                 echo "Warning: Could not apply patch to {$patch['name']}\n";
                 $allSuccess = false;
             }
@@ -65,7 +70,11 @@ foreach ($patches as $patch) {
     }
 
     if ($content !== $originalContent) {
-        file_put_contents($patch['file'], $content);
+        if (file_put_contents($patch['file'], $content) === false) {
+            echo "Error: Could not write to {$patch['name']}\n";
+            $allSuccess = false;
+            continue;
+        }
         echo "✓ Patched {$patch['name']}\n";
     } else {
         echo "✓ {$patch['name']} already patched\n";
