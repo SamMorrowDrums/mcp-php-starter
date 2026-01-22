@@ -13,8 +13,8 @@
         "mcp/sdk": "^0.3"
     },
     "require-dev": {
-        "phpunit/phpunit": "^11.0",
-        "friendsofphp/php-cs-fixer": "^3.0"
+        "friendsofphp/php-cs-fixer": "^3.0",
+        "phpunit/phpunit": "^11.0"
     },
     "autoload": {
         "psr-4": {
@@ -27,6 +27,8 @@
         }
     },
     "scripts": {
+        "post-install-cmd": "php bin/patch-sdk.php",
+        "post-update-cmd": "php bin/patch-sdk.php",
         "start:stdio": "php bin/server-stdio.php",
         "start:http": "php bin/server-http.php",
         "test": "phpunit",

@@ -1,0 +1,17 @@
+{
+    "_hash": "a83fffd6298b526ed371356f09bcaa94ffc6338c58b0a883305a7e7e2f40a178",
+    "patches": {
+        "mcp/sdk": [
+            {
+                "package": "mcp/sdk",
+                "description": "Allow spaces in resource names",
+                "url": "patches/mcp-sdk-allow-spaces-in-resource-names.patch",
+                "sha256": "d9634c4c5904bb16450995f1c8cba02f0d1afd18bd3682819b38635e72b6ec07",
+                "depth": 1,
+                "extra": {
+                    "provenance": "root"
+                }
+            }
+        ]
+    }
+}
