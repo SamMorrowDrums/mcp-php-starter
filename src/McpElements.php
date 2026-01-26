@@ -268,6 +268,48 @@ class McpElements
         return $message;
     }
 
+    /**
+     * Request user confirmation before proceeding with an action.
+     * Demonstrates schema elicitation - displays a form for user input.
+     *
+     * @param string $action Description of the action to confirm
+     * @param bool $destructive Whether the action is destructive
+     * @return string Confirmation result message
+     */
+    public function confirmAction(string $action, bool $destructive = false): string
+    {
+        // Note: Full elicitation support requires the PHP SDK to implement it.
+        // For now, we return a placeholder message demonstrating the intent.
+        $type = $destructive ? 'DESTRUCTIVE' : 'standard';
+        return "Confirmation requested for {$type} action: {$action}\n\n" .
+               "Note: Full schema elicitation requires client support. " .
+               "The action would display a confirmation dialog with:\n" .
+               "- Confirm (boolean): Whether to proceed\n" .
+               "- Reason (string, optional): Reason for the choice";
+    }
+
+    /**
+     * Request feedback from the user via URL elicitation.
+     * Opens a feedback form in the user's browser.
+     *
+     * @param string $question The question to ask the user
+     * @return string Feedback URL and instructions
+     */
+    public function getFeedback(string $question): string
+    {
+        $feedbackUrl = 'https://github.com/SamMorrowDrums/mcp-starters/issues/new?template=workshop-feedback.yml';
+        if (!empty($question)) {
+            $feedbackUrl .= '&title=' . urlencode($question);
+        }
+
+        // Note: Full URL elicitation requires the PHP SDK to implement it.
+        // For now, we return the URL for the user to visit manually.
+        return "Please provide feedback on MCP Starters!\n\n" .
+               "Question: {$question}\n\n" .
+               "Feedback URL: {$feedbackUrl}\n\n" .
+               "Note: Full URL elicitation would open this URL in your browser automatically.";
+    }
+
     // =========================================================================
     // RESOURCES
     // Resources expose data to the client that can be read.
