@@ -8,6 +8,9 @@ use Mcp\Capability\Attribute\McpTool;
 use Mcp\Capability\Attribute\McpResource;
 use Mcp\Capability\Attribute\McpResourceTemplate;
 use Mcp\Capability\Attribute\McpPrompt;
+use Mcp\Schema\Content\AudioContent;
+use Mcp\Schema\Content\ImageContent;
+use Mcp\Schema\Content\TextContent;
 use Mcp\Schema\ToolAnnotations;
 use Mcp\Schema\Icon;
 use Mcp\Server\RequestContext;
@@ -118,11 +121,16 @@ class McpElements
     {
         // Use the client's sampling capability to invoke their LLM
         $response = $context->getClientGateway()->sample(
-            prompt: $prompt,
+            message: $prompt,
             maxTokens: $maxTokens
         );
-        
-        return $response->content ?? 'No response from LLM';
+
+        return match (true) {
+            $response->content instanceof TextContent => $response->content->text,
+            $response->content instanceof AudioContent => $response->content->data,
+            $response->content instanceof ImageContent => $response->content->data,
+            default => 'No response from LLM',
+        };
     }
 
     /**
@@ -406,6 +414,22 @@ MARKDOWN;
     // RESOURCE TEMPLATES
     // Resource templates allow parameterized resource URIs.
     // =========================================================================
+
+    /**
+     * Get a personalized greeting for a specific person.
+     *
+     * @param string $name The name of the person to greet
+     * @return string Personalized greeting message
+     */
+    #[McpResourceTemplate(
+        uriTemplate: 'greeting://{name}',
+        name: 'Personalized Greeting',
+        mimeType: 'text/plain'
+    )]
+    public function getPersonalizedGreeting(string $name): string
+    {
+        return "Hello, {$name}! Welcome to the MCP PHP Starter server. We're glad to have you here!";
+    }
 
     /**
      * Get item data by ID using a resource template.

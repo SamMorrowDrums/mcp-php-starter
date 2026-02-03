@@ -202,6 +202,13 @@ class ServerFactory
                 description: 'An example document resource',
                 mimeType: 'text/plain'
             )
+            ->addResource(
+                handler: [McpElements::class, 'getSettings'],
+                uri: 'config://settings',
+                name: 'Server Settings',
+                description: 'Server configuration settings',
+                mimeType: 'application/json'
+            )
 
             // Resource Templates
             ->addResourceTemplate(
