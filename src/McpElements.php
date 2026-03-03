@@ -321,8 +321,9 @@ class McpElements
      * @return string Server information
      */
     #[McpResource(
-        uri: 'info://about',
-        name: 'About',
+        uri: 'about://server',
+        name: 'Server Info',
+        description: 'Information about this MCP server',
         mimeType: 'text/plain'
     )]
     public function getAbout(): string
@@ -331,10 +332,11 @@ class McpElements
 MCP PHP Starter v1.0.0
 
 This is a feature-complete MCP server demonstrating:
-- Tools with structured output
+- Tools with annotations and structured output
 - Resources (static and dynamic)
+- Resource templates
 - Prompts with completions
-- Multiple transport options (stdio, HTTP)
+- Sampling, progress updates, and dynamic tool loading
 
 For more information, visit: https://modelcontextprotocol.io
 TEXT;
@@ -470,29 +472,18 @@ MARKDOWN;
     }
 
     /**
-     * Request a code review with specific focus areas.
+     * Review code for potential improvements.
      *
-     * @param string $code The code to review
-     * @param string $language Programming language
-     * @param string|null $focus What to focus on (security, performance, readability, all)
+     * @param string $code Code to review
      * @return string The prompt text
      */
     #[McpPrompt(name: 'code_review')]
-    public function codeReviewPrompt(string $code, string $language, ?string $focus = 'all'): string
+    public function codeReviewPrompt(string $code): string
     {
-        $focusInstructions = [
-            'security' => 'Focus on security vulnerabilities and potential exploits.',
-            'performance' => 'Focus on performance optimizations and efficiency issues.',
-            'readability' => 'Focus on code clarity, naming, and maintainability.',
-            'all' => 'Provide a comprehensive review covering security, performance, and readability.',
-        ];
-
-        $instruction = $focusInstructions[$focus] ?? $focusInstructions['all'];
-
         return <<<PROMPT
-Please review the following {$language} code. {$instruction}
+Please review the following code for potential improvements:
 
-```{$language}
+```
 {$code}
 ```
 PROMPT;
