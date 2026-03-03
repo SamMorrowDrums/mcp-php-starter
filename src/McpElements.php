@@ -408,6 +408,22 @@ MARKDOWN;
     // =========================================================================
 
     /**
+     * Get a personalized greeting for a specific person.
+     *
+     * @param string $name The person's name
+     * @return string Personalized greeting
+     */
+    #[McpResourceTemplate(
+        uriTemplate: 'greeting://{name}',
+        name: 'Personalized Greeting',
+        mimeType: 'text/plain'
+    )]
+    public function getPersonalizedGreeting(string $name): string
+    {
+        return "Hello, {$name}! This is a personalized greeting resource.";
+    }
+
+    /**
      * Get item data by ID using a resource template.
      *
      * @param string $id The item ID
