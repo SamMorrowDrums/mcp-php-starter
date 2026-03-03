@@ -474,7 +474,7 @@ MARKDOWN;
     /**
      * Review code for potential improvements.
      *
-     * @param string $code Code to review
+     * @param string $code The code to review
      * @return string The prompt text
      */
     #[McpPrompt(name: 'code_review')]
