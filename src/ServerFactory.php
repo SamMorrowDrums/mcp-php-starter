@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace McpPhpStarter;
 
+use Mcp\Schema\ServerCapabilities;
 use Mcp\Schema\ToolAnnotations;
 use Mcp\Server\Builder;
 
@@ -19,6 +20,17 @@ class ServerFactory
     public static function configureBuilder(Builder $builder): Builder
     {
         return $builder
+            ->setCapabilities(new ServerCapabilities(
+                tools: true,
+                toolsListChanged: true,
+                resources: true,
+                resourcesSubscribe: false,
+                resourcesListChanged: false,
+                prompts: true,
+                promptsListChanged: false,
+                logging: true,
+                completions: true,
+            ))
             // Tools with custom schemas (title + description on all properties)
             ->addTool(
                 handler: [McpElements::class, 'hello'],
