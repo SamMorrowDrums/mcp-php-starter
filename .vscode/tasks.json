@@ -1,0 +1,32 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Run (stdio)",
+      "type": "shell",
+      "command": "php bin/server-stdio.php",
+      "group": "test"
+    },
+    {
+      "label": "Run (HTTP)",
+      "type": "shell",
+      "command": "php bin/server-http.php",
+      "group": "test"
+    },
+    {
+      "label": "Lint",
+      "type": "shell",
+      "command": "composer cs-check",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "Test",
+      "type": "shell",
+      "command": "composer test",
+      "group": "test"
+    }
+  ]
+}
