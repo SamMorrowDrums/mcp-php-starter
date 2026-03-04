@@ -1,0 +1,22 @@
+{
+  "name": "MCP PHP Starter",
+  "image": "mcr.microsoft.com/devcontainers/php:1-8.3",
+  "features": {},
+  "postCreateCommand": "composer install",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "bmewburn.vscode-intelephense-client",
+        "xdebug.php-debug"
+      ],
+      "settings": {}
+    }
+  },
+  "forwardPorts": [3000],
+  "portsAttributes": {
+    "3000": {
+      "label": "MCP HTTP Server",
+      "onAutoForward": "notify"
+    }
+  }
+}
