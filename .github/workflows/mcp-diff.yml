@@ -28,6 +28,8 @@ jobs:
 
       - uses: SamMorrowDrums/mcp-server-diff@v3
         with:
+          setup_node: 'true'
+          node_version: '22'
           install_command: composer install --prefer-dist --no-progress
           configurations: |
             [
