@@ -10,11 +10,13 @@
     ],
     "require": {
         "php": ">=8.2",
-        "mcp/sdk": "^0.3"
+        "mcp/sdk": "^0.8.1",
+        "nyholm/psr7": "^1.8.2",
+        "nyholm/psr7-server": "^1.1"
     },
     "require-dev": {
-        "friendsofphp/php-cs-fixer": "^3.0",
-        "phpunit/phpunit": "^11.0"
+        "friendsofphp/php-cs-fixer": "^3.95.27",
+        "phpunit/phpunit": "^11.5.56"
     },
     "autoload": {
         "psr-4": {
@@ -27,16 +29,17 @@
         }
     },
     "scripts": {
-        "post-install-cmd": "php bin/patch-sdk.php",
-        "post-update-cmd": "php bin/patch-sdk.php",
         "start:stdio": "php bin/server-stdio.php",
         "start:http": "php bin/server-http.php",
-        "test": "phpunit",
+        "test": "phpunit --bootstrap vendor/autoload.php tests",
         "cs-fix": "php-cs-fixer fix",
         "cs-check": "php-cs-fixer fix --dry-run --diff"
     },
     "config": {
-        "sort-packages": true
+        "sort-packages": true,
+        "platform": {
+            "php": "8.2.0"
+        }
     },
     "minimum-stability": "stable"
 }

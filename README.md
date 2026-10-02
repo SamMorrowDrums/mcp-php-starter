@@ -106,7 +106,15 @@ composer cs-fix
 
 # Run tests
 composer test
+
+# Check installed versions against security advisories
+composer audit --locked
 ```
+
+`composer.lock` is committed for reproducible installs. Dependencies are resolved
+for PHP 8.2, and CI checks PHP 8.2 and 8.3. Dependabot checks Composer dependencies
+and GitHub Actions weekly. Repository administrators must separately enable
+Dependabot alerts and security updates in GitHub's repository security settings.
 
 ## 🔍 MCP Inspector
 

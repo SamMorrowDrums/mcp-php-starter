@@ -15,7 +15,7 @@ jobs:
   mcp-diff:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -26,7 +26,7 @@ jobs:
           extensions: json, mbstring
           tools: composer:v2
 
-      - uses: SamMorrowDrums/mcp-server-diff@v2
+      - uses: SamMorrowDrums/mcp-server-diff@v3
         with:
           install_command: composer install --prefer-dist --no-progress
           configurations: |
