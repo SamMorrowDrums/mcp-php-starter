@@ -7,9 +7,9 @@ namespace McpPhpStarter\Tests;
 use Mcp\Schema\ResourceDefinition;
 use Mcp\Schema\ResourceTemplate;
 use Mcp\Server;
-use Mcp\Server\Transport\StdioTransport;
 use Mcp\Server\Transport\StreamableHttpTransport;
 use McpPhpStarter\ServerFactory;
+use McpPhpStarter\StdioTransport;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7Server\ServerRequestCreator;
 use PHPUnit\Framework\TestCase;
@@ -94,6 +94,44 @@ final class ServerTest extends TestCase
                 $responses[8]['messages'][0]['content']['text']
             );
             self::assertStringContainsString('echo 1;', $responses[9]['messages'][0]['content']['text']);
+        } finally {
+            if (is_resource($input)) {
+                fclose($input);
+            }
+            if (is_resource($output)) {
+                fclose($output);
+            }
+            unlink($outputPath);
+        }
+    }
+
+    public function testStdioRejectsServerDiscoverWithRequestIdBeforeInitialize(): void
+    {
+        $input = fopen('php://temp', 'w+');
+        $outputPath = tempnam(sys_get_temp_dir(), 'mcp-test-');
+        self::assertNotFalse($outputPath);
+        $output = fopen($outputPath, 'w+');
+        self::assertIsResource($input);
+        self::assertIsResource($output);
+
+        try {
+            fwrite($input, json_encode(['jsonrpc' => '2.0', 'id' => 'probe', 'method' => 'server/discover'], JSON_THROW_ON_ERROR) . "\n");
+            fwrite($input, json_encode($this->initializeRequest(), JSON_THROW_ON_ERROR) . "\n");
+            rewind($input);
+
+            self::assertSame(0, $this->createServer()->run(new StdioTransport($input, $output)));
+            $contents = file_get_contents($outputPath);
+            self::assertNotFalse($contents);
+            $lines = explode("\n", trim($contents));
+            self::assertCount(2, $lines);
+
+            $discover = json_decode($lines[0], true, 512, JSON_THROW_ON_ERROR);
+            self::assertSame('probe', $discover['id']);
+            self::assertSame(-32601, $discover['error']['code']);
+
+            $initialize = json_decode($lines[1], true, 512, JSON_THROW_ON_ERROR);
+            self::assertSame(1, $initialize['id']);
+            self::assertSame('mcp-php-starter', $initialize['result']['serverInfo']['name']);
         } finally {
             if (is_resource($input)) {
                 fclose($input);

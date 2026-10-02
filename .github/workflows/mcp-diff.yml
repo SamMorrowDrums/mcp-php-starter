@@ -26,10 +26,8 @@ jobs:
           extensions: json, mbstring
           tools: composer:v2
 
-      - uses: SamMorrowDrums/mcp-server-diff@v3
+      - uses: SamMorrowDrums/mcp-server-diff@v2
         with:
-          setup_node: 'true'
-          node_version: '22'
           install_command: composer install --prefer-dist --no-progress
           configurations: |
             [
