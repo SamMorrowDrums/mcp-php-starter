@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace McpPhpStarter;
 
-use Mcp\Capability\Attribute\McpTool;
+use Mcp\Capability\Attribute\McpPrompt;
 use Mcp\Capability\Attribute\McpResource;
 use Mcp\Capability\Attribute\McpResourceTemplate;
-use Mcp\Capability\Attribute\McpPrompt;
-use Mcp\Schema\ToolAnnotations;
+use Mcp\Capability\Attribute\McpTool;
+use Mcp\Schema\Content\PromptMessage;
+use Mcp\Schema\Content\TextContent;
+use Mcp\Schema\Enum\Role;
 use Mcp\Schema\Icon;
+use Mcp\Schema\ToolAnnotations;
 use Mcp\Server\RequestContext;
 
 /**
@@ -85,7 +88,7 @@ class McpElements
     public function getWeather(string $location): array
     {
         $conditions = ['sunny', 'cloudy', 'rainy', 'windy'];
-        
+
         return [
             'location' => $location,
             'temperature' => rand(15, 35),
@@ -121,7 +124,7 @@ class McpElements
             prompt: $prompt,
             maxTokens: $maxTokens
         );
-        
+
         return $response->content ?? 'No response from LLM';
     }
 
@@ -146,17 +149,17 @@ class McpElements
     public function longTask(RequestContext $context, string $taskName): string
     {
         $steps = 5;
-        
+
         for ($i = 0; $i < $steps; $i++) {
             // Send progress notification to the client
             $context->getClientGateway()->progress(
                 progress: $i + 1,
                 total: $steps,
-                message: "Processing step " . ($i + 1) . " of {$steps}"
+                message: 'Processing step ' . ($i + 1) . " of {$steps}"
             );
             usleep(200000); // 200ms per step (1 second total for faster CI)
         }
-        
+
         return "Task \"{$taskName}\" completed successfully after {$steps} steps!";
     }
 
@@ -181,7 +184,7 @@ class McpElements
         if ($this->bonusToolLoaded) {
             return "Bonus tool is already loaded! Use 'bonus_calculator' tool.";
         }
-        
+
         $this->bonusToolLoaded = true;
         // Note: In the PHP SDK, dynamic tool loading would trigger
         // a tools/list_changed notification to clients
@@ -282,10 +285,10 @@ class McpElements
         // For now, we return a placeholder message demonstrating the intent.
         $type = $destructive ? 'DESTRUCTIVE' : 'standard';
         return "Confirmation requested for {$type} action: {$action}\n\n" .
-               "Note: Full schema elicitation requires client support. " .
+               'Note: Full schema elicitation requires client support. ' .
                "The action would display a confirmation dialog with:\n" .
                "- Confirm (boolean): Whether to proceed\n" .
-               "- Reason (string, optional): Reason for the choice";
+               '- Reason (string, optional): Reason for the choice';
     }
 
     /**
@@ -307,7 +310,7 @@ class McpElements
         return "Please provide feedback on MCP Starters!\n\n" .
                "Question: {$question}\n\n" .
                "Feedback URL: {$feedbackUrl}\n\n" .
-               "Note: Full URL elicitation would open this URL in your browser automatically.";
+               'Note: Full URL elicitation would open this URL in your browser automatically.';
     }
 
     // =========================================================================
@@ -457,10 +460,10 @@ MARKDOWN;
      *
      * @param string $name Name of the person to greet
      * @param string|null $style The greeting style (formal, casual, enthusiastic)
-     * @return string The prompt text
+     * @return PromptMessage The user prompt message
      */
     #[McpPrompt(name: 'greet')]
-    public function greetPrompt(string $name, ?string $style = 'casual'): string
+    public function greetPrompt(string $name, ?string $style = 'casual'): PromptMessage
     {
         $styles = [
             'formal' => "Please compose a formal, professional greeting for {$name}.",
@@ -468,24 +471,25 @@ MARKDOWN;
             'enthusiastic' => "Create an excited, enthusiastic greeting for {$name}!",
         ];
 
-        return $styles[$style] ?? $styles['casual'];
+        return new PromptMessage(Role::User, new TextContent($styles[$style] ?? $styles['casual']));
     }
 
     /**
      * Review code for potential improvements.
      *
      * @param string $code The code to review
-     * @return string The prompt text
+     * @return PromptMessage The user prompt message
      */
     #[McpPrompt(name: 'code_review')]
-    public function codeReviewPrompt(string $code): string
+    public function codeReviewPrompt(string $code): PromptMessage
     {
-        return <<<PROMPT
+        $text = <<<PROMPT
 Please review the following code for potential improvements:
 
 ```
 {$code}
 ```
 PROMPT;
+        return new PromptMessage(Role::User, new TextContent($text));
     }
 }
