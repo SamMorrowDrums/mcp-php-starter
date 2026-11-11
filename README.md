@@ -1,7 +1,7 @@
 # MCP PHP Starter
 
 [![CI](https://github.com/SamMorrowDrums/mcp-php-starter/actions/workflows/ci.yml/badge.svg)](https://github.com/SamMorrowDrums/mcp-php-starter/actions/workflows/ci.yml)
-[![PHP](https://img.shields.io/badge/PHP-8.2%2B-777BB4?logo=php&logoColor=white)](https://www.php.net/)
+[![PHP](https://img.shields.io/badge/PHP-8.5%2B-777BB4?logo=php&logoColor=white)](https://www.php.net/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![MCP](https://img.shields.io/badge/MCP-Model%20Context%20Protocol-purple)](https://modelcontextprotocol.io/)
 
@@ -35,7 +35,7 @@ A feature-complete Model Context Protocol (MCP) server template in PHP. This sta
 
 ### Prerequisites
 
-- [PHP 8.2+](https://www.php.net/)
+- [PHP 8.5+](https://www.php.net/)
 - [Composer](https://getcomposer.org/)
 
 ### Installation
@@ -116,7 +116,7 @@ composer audit --locked
 ```
 
 `composer.lock` is committed for reproducible installs. Dependencies are resolved
-for PHP 8.2, and CI checks PHP 8.2, 8.4, and 8.5. Dependabot checks Composer dependencies
+for PHP 8.5, and CI and the development container use PHP 8.5. Dependabot checks Composer dependencies
 and GitHub Actions weekly. Repository administrators must separately enable
 Dependabot alerts and security updates in GitHub's repository security settings.
 
