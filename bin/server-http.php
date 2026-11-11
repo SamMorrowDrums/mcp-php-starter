@@ -20,8 +20,6 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-use Mcp\Server;
-
 $port = getenv('PORT') ?: '3000';
 
 echo "MCP PHP Starter running on http://localhost:{$port}\n";

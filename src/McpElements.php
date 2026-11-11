@@ -4,15 +4,18 @@ declare(strict_types=1);
 
 namespace McpPhpStarter;
 
-use Mcp\Capability\Attribute\McpPrompt;
-use Mcp\Capability\Attribute\McpResource;
-use Mcp\Capability\Attribute\McpResourceTemplate;
-use Mcp\Capability\Attribute\McpTool;
+use Mcp\Schema\Content\AudioContent;
+use Mcp\Schema\Content\ImageContent;
 use Mcp\Schema\Content\PromptMessage;
 use Mcp\Schema\Content\TextContent;
+use Mcp\Schema\Content\ToolUseContent;
 use Mcp\Schema\Enum\Role;
 use Mcp\Schema\Icon;
 use Mcp\Schema\ToolAnnotations;
+use Mcp\Server\Capability\Attribute\McpPrompt;
+use Mcp\Server\Capability\Attribute\McpResource;
+use Mcp\Server\Capability\Attribute\McpResourceTemplate;
+use Mcp\Server\Capability\Attribute\McpTool;
 use Mcp\Server\RequestContext;
 
 /**
@@ -121,11 +124,17 @@ class McpElements
     {
         // Use the client's sampling capability to invoke their LLM
         $response = $context->getClientGateway()->sample(
-            prompt: $prompt,
+            message: $prompt,
             maxTokens: $maxTokens
         );
 
-        return $response->content ?? 'No response from LLM';
+        return implode("\n", array_map(
+            static fn (TextContent|ImageContent|AudioContent|ToolUseContent $content): string => match (true) {
+                $content instanceof TextContent => $content->text,
+                default => json_encode($content, JSON_THROW_ON_ERROR),
+            },
+            $response->getContentBlocks()
+        ));
     }
 
     /**

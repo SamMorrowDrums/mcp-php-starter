@@ -10,7 +10,7 @@
     ],
     "require": {
         "php": ">=8.2",
-        "mcp/sdk": "^0.8.1",
+        "mcp/sdk": "^0.10.0",
         "nyholm/psr7": "^1.8.2",
         "nyholm/psr7-server": "^1.1"
     },

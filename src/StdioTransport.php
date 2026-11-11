@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace McpPhpStarter;
 
 use Mcp\Schema\JsonRpc\Error;
+use Mcp\Server\Authorization\AccessToken;
 use Mcp\Server\Transport\StdioTransport as SdkStdioTransport;
 use Symfony\Component\Uid\Uuid;
 
@@ -17,15 +18,19 @@ use Symfony\Component\Uid\Uuid;
  */
 class StdioTransport extends SdkStdioTransport
 {
-    protected function handleMessage(string $payload, ?Uuid $sessionId): void
-    {
+    protected function handleMessage(
+        string $payload,
+        ?Uuid $sessionId,
+        ?AccessToken $accessToken = null,
+        ?string $principal = null
+    ): void {
         if (null === $sessionId && null !== ($error = $this->preInitializeError($payload))) {
             $this->send(json_encode($error, \JSON_THROW_ON_ERROR), []);
 
             return;
         }
 
-        parent::handleMessage($payload, $sessionId);
+        parent::handleMessage($payload, $sessionId, $accessToken, $principal);
     }
 
     private function preInitializeError(string $payload): ?Error

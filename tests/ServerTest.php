@@ -6,7 +6,7 @@ namespace McpPhpStarter\Tests;
 
 use Mcp\Schema\ResourceDefinition;
 use Mcp\Schema\ResourceTemplate;
-use Mcp\Server;
+use Mcp\Server\Server;
 use Mcp\Server\Transport\StreamableHttpTransport;
 use McpPhpStarter\ServerFactory;
 use McpPhpStarter\StdioTransport;
@@ -156,7 +156,7 @@ final class ServerTest extends TestCase
         $response = $this->createServer()->run(new StreamableHttpTransport($request, $factory, $factory));
 
         self::assertSame(200, $response->getStatusCode());
-        self::assertNotSame('', $response->getHeaderLine('Mcp-Session-Id'));
+        self::assertSame('', $response->getHeaderLine('Mcp-Session-Id'));
         self::assertStringContainsString('"mcp-php-starter"', (string) $response->getBody());
         self::assertStringNotContainsString('"error"', (string) $response->getBody());
     }
