@@ -116,7 +116,7 @@ composer audit --locked
 ```
 
 `composer.lock` is committed for reproducible installs. Dependencies are resolved
-for PHP 8.2, and CI checks PHP 8.2 and 8.5. Dependabot checks Composer dependencies
+for PHP 8.2, and CI checks PHP 8.2, 8.4, and 8.5. Dependabot checks Composer dependencies
 and GitHub Actions weekly. Repository administrators must separately enable
 Dependabot alerts and security updates in GitHub's repository security settings.
 
