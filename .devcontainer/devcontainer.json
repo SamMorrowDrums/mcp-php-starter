@@ -1,6 +1,6 @@
 {
   "name": "MCP PHP Starter",
-  "image": "mcr.microsoft.com/devcontainers/php:1-8.3",
+  "image": "mcr.microsoft.com/devcontainers/php:4-8.5-bookworm",
   "features": {},
   "postCreateCommand": "composer install",
   "customizations": {
